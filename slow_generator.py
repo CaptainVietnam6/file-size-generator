@@ -53,28 +53,13 @@ def generator():
         
         #generate file
         start = timer()
+        kilobyte = "0" * 1024
         file_output = ""
         write_cycle = 0
-        if file_size < 1000:
-            kilobyte = "0" * 1024
-            for i in range(int(file_size)):
-                file_output = file_output + kilobyte
-                write_cycle += 1
-                print(f"Wrote {write_cycle} kilobytes or {write_cycle * 1024} bytes")
-
-        elif file_size >= 1000 and file_size < 1000000:
-            megabyte = "0" * 1024 * 1024
-            for i in range(int(file_size / 1000)):
-                file_output = file_output + megabyte
-                write_cycle += 1
-                print(f"Wrote {write_cycle * 1024} kilobytes or {write_cycle * 1024 * 1024} bytes")
-        
-        elif file_size >= 1000000 and file_size < size_limit:
-            gigabyte = "0" * 1024 * 1024 * 1024
-            for i in range(int(file_size / 1000 / 1000)):
-                file_output = file_output + gigabyte
-                write_cycle += 1
-                print(f"Wrote {write_cycle * 1024 * 1024} kilobytes or {write_cycle * 1024 * 1024 *1024} bytes")
+        for i in range(int(file_size)):
+            file_output = file_output + kilobyte
+            write_cycle += 1
+            print(f"Wrote {write_cycle} kilobytes or {write_cycle * 1024} bytes")
 
         #write & create file
         f = open(f"{file_size}KB_file.txt", "w")
