@@ -15,7 +15,6 @@ Program Status: ACTIVE
 #ok literally this is really inefficient
 #but i wanted to do this for fun
 import os
-import termcolor
 from termcolor import colored
 
 def clear():
@@ -34,11 +33,23 @@ def generator():
         os.mkdir("output")
 
     if write_type == 1:
+        #checks the requested file size to be over 1 kilobyte and under 32 gigabyte
+        #restricted to 16 gigabyte just to reduce processing times, feel free to change to your needs
+        size_limit = 16000000 #in kilobytes
         file_size_check = False
         while file_size_check == False:
-            file_size = int(input("Please enter the file size you desire in kilobytes (1024 bytes, 8192 bits):\n"))
-            if file_size_check < 1:
-                print("Minimum file size is 1 kilobyte, please re-enter a valid number")
+            file_size = float(input("Please enter the file size you desire in kilobytes (1024 bytes, 8192 bits):\n"))
+            if file_size >= 1 and file_size <= size_limit:
+                file_size_check = True
+            else:
+                if file_size < 1:
+                    clear()
+                    print(colored("Minimum file size is 1 kilobyte, please re-enter a valid number", "red"))
+                elif file_size > size_limit:
+                    clear()
+                     #round function to remove ".0" at the end
+                    print(colored(f"Cannot generate a file over {round(size_limit / 1000000)} gigabytes ({round(size_limit / 1000000)} million kilobytes)\nplease re-enter a valid number", "red"))
+        
 
 
 generator()
