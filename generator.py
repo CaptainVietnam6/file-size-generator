@@ -51,36 +51,56 @@ def generator():
                      #round function to remove ".0" at the end
                     print(colored(f"Cannot generate a file over {round(size_limit / 1000000)} gigabytes ({round(size_limit / 1000000)} million kilobytes)\nplease re-enter a valid number", "red"))
         
-        #generate file
-        start = timer()
+        #def functions to generate and write file
         file_output = ""
         write_cycle = 0
-        if file_size < 1000:
+        #generates files under 1 megabyte
+        #generates the entire file then writes it at once
+        #unlike next function, this one is actually faster to write at once
+        def under_1_megabyte(file_size, file_output, write_cycle):
             kilobyte = "0" * 1024
             for i in range(int(file_size)):
                 file_output = file_output + kilobyte
                 write_cycle += 1
                 print(f"Wrote {write_cycle} kilobytes or {write_cycle * 1024} bytes")
+            write(file_output, file_size)
 
-        elif file_size >= 1000 and file_size < 1000000:
-            megabyte = "0" * 1024 * 1024
+        #generates files from 1 megabyte to 1000 megabyte
+        #generates a portion of the file then write it gradually
+        #faster than writing all at once because of less resource utilization
+        def under_1000_megabyte(file_size, write_cycle):
+            megabyte = "0" * (1024 ** 2)
             for i in range(int(file_size / 1000)):
-                file_output = file_output + megabyte
+                write(megabyte, file_size)
                 write_cycle += 1
-                print(f"Wrote {write_cycle * 1024} kilobytes or {write_cycle * 1024 * 1024} bytes")
+                print(f"Wrote {write_cycle * 1024} kilobytes or {write_cycle * (1024 ** 2)} bytes")
         
-        elif file_size >= 1000000 and file_size < size_limit:
-            gigabyte = "0" * 1024 * 1024 * 1024
+        #generates files above 1 gigabyte
+        def above_1_gigabyte(file_size, file_output, write_cycle):
+            gigabyte = "0" * (1024 ** 3)
             for i in range(int(file_size / 1000 / 1000)):
                 file_output = file_output + gigabyte
                 write_cycle += 1
-                print(f"Wrote {write_cycle * 1024 * 1024} kilobytes or {write_cycle * 1024 * 1024 *1024} bytes")
+                print(f"Wrote {write_cycle * 1024 * 1024} kilobytes or {write_cycle * (1024 ** 3)} bytes")
+            write(file_output, file_size)
 
         #write & create file
-        f = open(f"{file_size}KB_file.txt", "w")
-        f.write(file_output)
+        def write(file_output, file_size):
+            f = open(f"{round(file_size)}KB_file.txt", "a")
+            f.write(file_output)
+
+        #executes generation and write functions
+        start = timer()
+        if file_size < 1000:
+            under_1_megabyte(file_size, file_output, write_cycle)
+        elif file_size >= 1000 and file_size <= 1000000:
+            under_1000_megabyte(file_size, write_cycle)
+        elif file_size >= 1000000 and file_size < size_limit:
+            above_1_gigabyte(file_size, file_output, write_cycle)
+
         end = timer()
         print(colored(f"File generation & write took {round(end - start, 5)} seconds", "green"))
+
 
 
 generator()
