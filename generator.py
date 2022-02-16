@@ -2,7 +2,6 @@
 Copyright (C) 2022 Kiet Pham <kiet.riley2005@gmail.com>
 This software/program has a copyright license, more information is in the 'LICENSE' file
 IF YOU WANT TO USE/COPY/MODIFY/REPRODUCE/RE-DISTRIBUTE THIS PROGRAM, YOU MUST INCLUDE A COPY OF THE LICENSE
-
 Author Name: Kiet Pham
 Author Contact: kiet.riley2005@gmail.com
 Discord: CaptainVietnam6#0001
@@ -10,13 +9,16 @@ Discord Server: https://discord.gg/3z76p8H5yj
 GitHub: https://github.com/CaptainVietnam6
 Instagram: @itzkiettttt_fpv
 Program Status: ACTIVE
-
 '''
 #ok literally this is really inefficient
 #but i wanted to do this for fun
 import os
+import shutil
 from termcolor import colored
 from timeit import default_timer as timer
+
+#gets the working directory's path
+dir_path = os.path.dirname(os.path.realpath(__file__))
 
 def clear():
     command = "clear"
@@ -88,7 +90,7 @@ def generator():
         def write(file_output, file_size):
             f = open(f"{round(file_size)}KB_file.txt", "a")
             f.write(file_output)
-
+            
         #executes generation and write functions
         start = timer()
         if file_size < 1000:
@@ -98,9 +100,33 @@ def generator():
         elif file_size >= 1000000 and file_size < size_limit:
             above_1_gigabyte(file_size, file_output, write_cycle)
 
+        #moves file into the "output" folder. done after all processes as there are write modes
+        #that write sequentially (continuously) instead of at once. will run into errors otherwise
+        shutil.move(f"{dir_path}/{round(file_size)}KB_file.txt", f"{dir_path}/output/{round(file_size)}KB_file.txt")
+
         end = timer()
         print(colored(f"File generation & write took {round(end - start, 5)} seconds", "green"))
 
+    if write_type == 2:
+        print(colored("Note: Each file will contrain 16 kilobytes of data", "red"))
+        files_num = int(input("Please enter the amount of files you want in your folder: "))
 
+        def write(file_output, run_num):
+            f = open(f"file #{round(run_num)}.txt", "w")
+            f.write(file_output)
+            f.close()
+            shutil.move(f"{dir_path}/file #{round(run_num)}.txt", f"{dir_path}/output/file #{round(run_num)}.txt")
+
+        start = timer()
+        file_output = "0" * (2 ** 14) #16384 bytes or 16 kilobytes
+        run_num = 1
+
+        for i in range(files_num):
+            write(file_output, run_num)
+            print(f"Wrote {run_num} files")
+            run_num += 1
+            
+        end = timer()
+        print(colored(f"File generation & write took {round(end - start, 5)} seconds", "green"))
 
 generator()
